@@ -41,8 +41,8 @@ public class XMLValidator {
             Schema schema = factory.newSchema(new StreamSource(XSDpath));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(XMLpath));
-            return true;
 
+            return true;
         } catch (SAXException e) {
             System.out.println(e.getMessage());
             return false;

@@ -51,17 +51,18 @@ public class AppXML {
 
         System.out.println("\nxml StAX parsing");
         StAXParaser staxParaser = new StAXParaser();
-        Airport satxAirport = staxParaser.parseFile(XML_PATH);
-        satxAirport.getPlaneList().forEach(System.out::println);
-        Collections.sort(satxAirport.getPlaneList());
+        Airport staxAirport = staxParaser.parseFile(XML_PATH);
+        staxAirport.getPlaneList().forEach(System.out::println);
+        Collections.sort(staxAirport.getPlaneList());
         System.out.println("Sorted StAXairport");
-        satxAirport.getPlaneList().forEach(System.out::println);
+        staxAirport.getPlaneList().forEach(System.out::println);
 
-        System.out.println(domAirport.equals(saxAirport) + ", " + domAirport.equals(satxAirport) + ", " + saxAirport.equals(satxAirport));
-        System.out.println(domAirport.hashCode() + ", " + saxAirport.hashCode() + ", " + satxAirport.hashCode());
+        System.out.println(domAirport.equals(saxAirport) + ", " + domAirport.equals(staxAirport) + ", " + saxAirport.equals(staxAirport));
+        System.out.println(domAirport.hashCode() + ", " + saxAirport.hashCode() + ", " + staxAirport.hashCode());
 
 
         try (Connection connection = ConnectionToDB.getConnection()) {
+
             PlaneDAO planeDAO = new PlaneDAO(connection);
 
             planeDAO.dropTable(connection);
@@ -70,7 +71,7 @@ public class AppXML {
             for (int i = 0; i < domAirport.getPlaneList().size(); i++) {
                 planeDAO.add(domAirport.getPlaneList().get(i));
                 planeDAO.add(saxAirport.getPlaneList().get(i));
-                planeDAO.add(satxAirport.getPlaneList().get(i));
+                planeDAO.add(staxAirport.getPlaneList().get(i));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

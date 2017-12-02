@@ -17,7 +17,7 @@ public class PlaneDAO extends AbstractDAO<Plane> {
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS plane";
     private static final String INSERT_PLANE = "INSERT INTO plane VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
     private static final String SELECT_PLANE_BY_ID = "SELECT id, model, origin, plane_type, crew_seats_number, " +
-            "carrying_capacity, passengers_number, length, width, height, price, currency FROM plane WHERE number = ?";
+            "carrying_capacity, passengers_number, length, width, height, price, currency FROM plane WHERE id = ?";
     private static final String SELECT_ALL_PLANES = "SELECT id, model, origin, plane_type, crew_seats_number, " +
             "carrying_capacity, passengers_number, length, width, height, price, currency FROM plane";
     private static final String UPDATE_PLANE_BY_ID = "UPDATE plane SET model=?, origin=?, plane_type=?, " +
@@ -43,8 +43,8 @@ public class PlaneDAO extends AbstractDAO<Plane> {
 
     public void dropTable(Connection connection) throws SQLException {
 
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(DROP_TABLE)) {
-            preparedStatement.executeUpdate();
+        try (Statement statement = connection.createStatement()){
+            statement.executeQuery(DROP_TABLE);
         }
 
     }
@@ -67,6 +67,8 @@ public class PlaneDAO extends AbstractDAO<Plane> {
             preparedStatement.setString(12, plane.getCost().getCurrency());
 
             preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -144,6 +146,7 @@ public class PlaneDAO extends AbstractDAO<Plane> {
 
     @Override
     public void update(Plane plane) throws SQLException {
+
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(UPDATE_PLANE_BY_ID)) {
             preparedStatement.setString(1, plane.getModel());
             preparedStatement.setString(2, plane.getOrigin());
