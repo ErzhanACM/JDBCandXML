@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<airport
+        xmlns="https://www.w3schools.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://www.w3schools.com schemaOfAirport.xml">
+    <plane number="1">
+        <model>Боинг 737</model>
+        <origin>USA</origin>
+        <chars type="пассажирский">
+            <crewSeatsNumber>2</crewSeatsNumber>
+            <carryingCapacity>20540</carryingCapacity>
+            <passengersNumber>230</passengersNumber>
+        </chars>
+        <parameters>
+            <lenght>30.2</lenght>
+            <height>12.5</height>
+            <width>35.3</width>
+        </parameters>
+        <cost currency="талеров">4500000</cost>
+    </plane>
+    
+    <plane number="2">
+        <model>АН-32</model>
+        <origin>Italy</origin>
+        <chars type="пожарный">
+            <crewSeatsNumber>4</crewSeatsNumber>
+            <carryingCapacity>5800</carryingCapacity>
+            <passengersNumber>50</passengersNumber>
+        </chars>
+        <parameters>
+            <lenght>24.4</lenght>
+            <height>9.7</height>
+            <width>30.5</width>
+        </parameters>
+        <cost currency="талеров">1200000</cost>
+    </plane>
+    
+    <plane number="3">
+        <model>АН-225</model>
+        <origin>Kazakhstan</origin>
+        <chars type="грузовой">
+            <crewSeatsNumber>6</crewSeatsNumber>
+            <carryingCapacity>250000</carryingCapacity>
+            <passengersNumber>100</passengersNumber>
+        </chars>
+        <parameters>
+            <lenght>85.2</lenght>
+            <height>20.9</height>
+            <width>90.4</width>
+        </parameters>
+        <cost currency="талеров">5300000</cost>
+    </plane>
+</airport>

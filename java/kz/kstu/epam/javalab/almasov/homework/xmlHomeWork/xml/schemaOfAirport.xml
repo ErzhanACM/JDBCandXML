@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://www.w3schools.com"
+           xmlns="https://www.w3schools.com"
+           elementFormDefault="qualified">
+
+    <xs:element name="airport">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="plane" type="plane" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="plane">
+        <xs:sequence>
+            <xs:element name="model" type="xs:string"/>
+            <xs:element name="origin" type="xs:string"/>
+            <xs:element name="chars" type="chars"/>
+            <xs:element name="parameters" type="parameters"/>
+            <xs:element name="cost" type="cost"/>
+        </xs:sequence>
+        <xs:attribute name="number" type="xs:int" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="chars">
+        <xs:sequence>
+            <xs:element name="crewSeatsNumber" type="xs:int"/>
+            <xs:element name="carryingCapacity" type="xs:int"/>
+            <xs:element name="passengersNumber" type="xs:int"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="types" use="required"/>
+    </xs:complexType>
+
+    <xs:simpleType name="types">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="пассажирский"/>
+            <xs:enumeration value="грузовой"/>
+            <xs:enumeration value="почтовый"/>
+            <xs:enumeration value="пожарный"/>
+            <xs:enumeration value="сельскохозяйственный"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="parameters">
+        <xs:sequence>
+            <xs:element name="lenght" type="xs:double"/>
+            <xs:element name="height" type="xs:double"/>
+            <xs:element name="width" type="xs:double"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="currency">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="талеров"/>
+            <xs:enumeration value="рублей"/>
+            <xs:enumeration value="тенге"/>
+            <xs:enumeration value="долларов"/>
+            <xs:enumeration value="евро"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType mixed="true" name="cost">
+        <xs:attribute name="currency" type="xs:string" use="required"/>
+    </xs:complexType>
+
+</xs:schema>
