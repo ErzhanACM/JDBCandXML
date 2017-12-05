@@ -100,7 +100,7 @@ public class PlaneDAO extends AbstractDAO<Plane> {
     @Override
     public Plane getEntityById(int id) throws SQLException {
 
-        Plane plane = null;
+        Plane plane = new Plane();
 
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(SELECT_PLANE_BY_ID)) {
             preparedStatement.setInt(1, id);
