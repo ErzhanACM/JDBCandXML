@@ -1,8 +1,6 @@
 package kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.dao.impl;
 
-import com.sun.org.apache.regexp.internal.RE;
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.dao.AbstractDAO;
-import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.entities.Airport;
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.entities.Plane;
 
 import java.sql.*;
@@ -33,43 +31,43 @@ public class PlaneDAO extends AbstractDAO<Plane> {
         super(connection);
     }
 
-    public void createTable(Connection connection) throws SQLException {
+    private void exe(String command){
 
         try (Statement statement = getConnection().createStatement()) {
-            statement.execute(CREATE_TABLE_QUERY);
+            statement.execute(command);
+        } catch (SQLException e) {
+            printException(e);
         }
+    }
 
+    private Plane createPlane(Plane plane, ResultSet resultSet) throws SQLException {
+
+        plane.setNumber(resultSet.getInt("id"));
+        plane.setModel(resultSet.getString("model"));
+        plane.setOrigin(resultSet.getString("origin"));
+        plane.getChars().setType(resultSet.getString("plane_type"));
+        plane.getChars().setCrewSeatsNumber(resultSet.getInt("crew_seats_number"));
+        plane.getChars().setCarryingCapacity(resultSet.getInt("carrying_capacity"));
+        plane.getChars().setPassengersNumber(resultSet.getInt("passengers_number"));
+        plane.getParameters().setLenght(resultSet.getDouble("length"));
+        plane.getParameters().setWidth(resultSet.getDouble("width"));
+        plane.getParameters().setHeight(resultSet.getDouble("height"));
+        plane.getCost().setPrice(resultSet.getDouble("price"));
+        plane.getCost().setCurrency(resultSet.getString("currency"));
+
+        return plane;
+    }
+
+    private void printException(Exception e) {
+        System.out.println(e.getMessage());
+    }
+
+    public void createTable(Connection connection) throws SQLException {
+        exe(CREATE_TABLE_QUERY);
     }
 
     public void dropTable(Connection connection) throws SQLException {
-
-        try (Statement statement = connection.createStatement()){
-            statement.executeQuery(DROP_TABLE);
-        }
-
-    }
-
-    @Override
-    public void add(Plane plane) throws SQLException {
-
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(INSERT_PLANE)) {
-            preparedStatement.setInt(1, plane.getNumber());
-            preparedStatement.setString(2, plane.getModel());
-            preparedStatement.setString(3, plane.getOrigin());
-            preparedStatement.setString(4, plane.getChars().getType());
-            preparedStatement.setInt(5, plane.getChars().getCrewSeatsNumber());
-            preparedStatement.setInt(6, plane.getChars().getCarryingCapacity());
-            preparedStatement.setInt(7, plane.getChars().getPassengersNumber());
-            preparedStatement.setDouble(8, plane.getParameters().getLenght());
-            preparedStatement.setDouble(9, plane.getParameters().getWidth());
-            preparedStatement.setDouble(10, plane.getParameters().getHeight());
-            preparedStatement.setDouble(11, plane.getCost().getPrice());
-            preparedStatement.setString(12, plane.getCost().getCurrency());
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        exe(DROP_TABLE);
     }
 
     @Override
@@ -83,28 +81,17 @@ public class PlaneDAO extends AbstractDAO<Plane> {
 
                 while (resultSet.next()) {
                     Plane plane = new Plane();
-                    plane.setNumber(resultSet.getInt("id"));
-                    plane.setModel(resultSet.getString("model"));
-                    plane.setOrigin(resultSet.getString("origin"));
-                    plane.getChars().setType(resultSet.getString("plane_type"));
-                    plane.getChars().setCrewSeatsNumber(resultSet.getInt("crew_seats_number"));
-                    plane.getChars().setCarryingCapacity(resultSet.getInt("carrying_capacity"));
-                    plane.getChars().setPassengersNumber(resultSet.getInt("passengers_number"));
-                    plane.getParameters().setLenght(resultSet.getDouble("length"));
-                    plane.getParameters().setWidth(resultSet.getDouble("width"));
-                    plane.getParameters().setHeight(resultSet.getDouble("height"));
-                    plane.getCost().setPrice(resultSet.getDouble("price"));
-                    plane.getCost().setCurrency(resultSet.getString("currency"));
+                    plane = createPlane(plane, resultSet);
 
                     planeList.add(plane);
                 }
 
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                printException(e);
             }
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            printException(e);
         }
 
         return planeList;
@@ -119,26 +106,15 @@ public class PlaneDAO extends AbstractDAO<Plane> {
             preparedStatement.setInt(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                plane.setNumber(resultSet.getInt("id"));
-                plane.setModel(resultSet.getString("model"));
-                plane.setOrigin(resultSet.getString("origin"));
-                plane.getChars().setType(resultSet.getString("plane_type"));
-                plane.getChars().setCrewSeatsNumber(resultSet.getInt("crew_seats_number"));
-                plane.getChars().setCarryingCapacity(resultSet.getInt("carrying_capacity"));
-                plane.getChars().setPassengersNumber(resultSet.getInt("passengers_number"));
-                plane.getParameters().setLenght(resultSet.getDouble("length"));
-                plane.getParameters().setWidth(resultSet.getDouble("width"));
-                plane.getParameters().setHeight(resultSet.getDouble("height"));
-                plane.getCost().setPrice(resultSet.getDouble("price"));
-                plane.getCost().setCurrency(resultSet.getString("currency"));
 
+                plane = createPlane(plane, resultSet);
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                printException(e);
             }
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            printException(e);
         }
 
         return plane;
@@ -163,7 +139,30 @@ public class PlaneDAO extends AbstractDAO<Plane> {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            printException(e);
+        }
+    }
+
+    @Override
+    public void add(Plane plane) throws SQLException {
+
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(INSERT_PLANE)) {
+            preparedStatement.setInt(1, plane.getNumber());
+            preparedStatement.setString(2, plane.getModel());
+            preparedStatement.setString(3, plane.getOrigin());
+            preparedStatement.setString(4, plane.getChars().getType());
+            preparedStatement.setInt(5, plane.getChars().getCrewSeatsNumber());
+            preparedStatement.setInt(6, plane.getChars().getCarryingCapacity());
+            preparedStatement.setInt(7, plane.getChars().getPassengersNumber());
+            preparedStatement.setDouble(8, plane.getParameters().getLenght());
+            preparedStatement.setDouble(9, plane.getParameters().getWidth());
+            preparedStatement.setDouble(10, plane.getParameters().getHeight());
+            preparedStatement.setDouble(11, plane.getCost().getPrice());
+            preparedStatement.setString(12, plane.getCost().getCurrency());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            printException(e);
         }
     }
 
@@ -173,7 +172,7 @@ public class PlaneDAO extends AbstractDAO<Plane> {
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            printException(e);
         }
     }
 
@@ -182,7 +181,7 @@ public class PlaneDAO extends AbstractDAO<Plane> {
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(DELETE_ALL_PLANES)) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            printException(e);
         }
     }
 }

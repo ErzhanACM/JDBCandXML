@@ -2,7 +2,7 @@ package kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.runner;
 
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.dao.impl.PlaneDAO;
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.entities.Airport;
-import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.dao.ConnectionToDB;
+import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.dao.DatabaseConnection;
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.service.XMLservice.DOM.DOMParser;
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.service.XMLservice.SAX.SAXParser;
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.service.XMLservice.StAX.StAXParaser;
@@ -82,7 +82,7 @@ public class AppXML {
         System.out.println(domAirport.hashCode() + ", " + saxAirport.hashCode() + ", " + staxAirport.hashCode());
 
 
-        try (Connection connection = ConnectionToDB.getConnection()) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
 
             PlaneDAO planeDAO = new PlaneDAO(connection);
 
