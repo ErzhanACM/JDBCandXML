@@ -27,6 +27,7 @@ public class Plane implements Comparable {
     }
 
     public static class Chars {
+
         private String type;
         private Integer crewSeatsNumber;
         private Integer carryingCapacity;

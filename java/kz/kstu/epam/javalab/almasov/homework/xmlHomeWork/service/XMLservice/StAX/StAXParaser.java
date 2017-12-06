@@ -2,6 +2,7 @@ package kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.service.XMLservice.StA
 
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.entities.Airport;
 import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.entities.Plane;
+import kz.kstu.epam.javalab.almasov.homework.xmlHomeWork.util.ParserUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,63 +38,70 @@ public class StAXParaser {
 
     private void process(XMLStreamReader reader) throws XMLStreamException {
 
-        String name = "";
-
-
         while (reader.hasNext()) {
 
             int type = reader.next();
 
-            switch (type) {
-
-                case XMLStreamConstants.START_ELEMENT: {
-                    name = reader.getLocalName();
-
-                    switch (name) {
-
-                        case "airport": {
-                            airport = new Airport();
-                            if (airport.getPlaneList() == null) {
-                                airport.setPlaneList(new ArrayList<>());
-                            }
-                        }
-                        break;
-
-                        case "plane": {
-                            plane = new Plane();
-                            getAttribute(reader);
-                        }
-                        break;
-
-                        case "chars": {
-                            getAttribute(reader);
-                        }
-                        break;
-
-                        case "cost": {
-                            getAttribute(reader);
-                        }
-                        break;
-                    }
-                }
-                break;
-
-                case XMLStreamConstants.END_ELEMENT: {
-                    if (reader.getLocalName() == "plane") {
-                        fillAirport();
-                    }
-                }
-                break;
-
-                case XMLStreamConstants.CHARACTERS: {
-                    getCharacters(name, reader);
-                }
-                break;
-
-            }
-
+            switchType(reader, type);
         }
 
+    }
+
+    private void switchType(XMLStreamReader reader, int type){
+
+        String name = "";
+
+        switch (type) {
+
+            case XMLStreamConstants.START_ELEMENT: {
+                name = reader.getLocalName();
+
+                switchLocalName(reader, name);
+            }
+            break;
+
+            case XMLStreamConstants.END_ELEMENT: {
+                if (reader.getLocalName() == "plane") {
+                    fillAirport();
+                }
+            }
+            break;
+
+            case XMLStreamConstants.CHARACTERS: {
+                getCharacters(reader, name);
+            }
+            break;
+        }
+    }
+
+    private void switchLocalName(XMLStreamReader reader, String name){
+
+        switch (name) {
+
+            case "airport": {
+                airport = new Airport();
+                if (airport.getPlaneList() == null) {
+                    airport.setPlaneList(new ArrayList<>());
+                }
+            }
+            break;
+
+            case "plane": {
+                plane = new Plane();
+                getAttribute(reader);
+            }
+            break;
+
+            case "chars": {
+                getAttribute(reader);
+            }
+            break;
+
+            case "cost": {
+                getAttribute(reader);
+            }
+            break;
+        }
     }
 
     private void getAttribute(XMLStreamReader reader) {
@@ -122,58 +130,9 @@ public class StAXParaser {
         }
     }
 
-    private void getCharacters(String name, XMLStreamReader reader) {
+    private void getCharacters(XMLStreamReader reader, String name) {
         if (!reader.getText().trim().equals("")) {
-
-            switch (name) {
-
-                case "model": {
-                    plane.setModel(reader.getText());
-                }
-                break;
-
-                case "origin": {
-                    plane.setOrigin(reader.getText());
-                }
-                break;
-
-                case "crewSeatsNumber": {
-                    plane.getChars().setCrewSeatsNumber(Integer.valueOf(reader.getText()));
-                }
-                break;
-
-                case "carryingCapacity": {
-                    plane.getChars().setCarryingCapacity(Integer.valueOf(reader.getText()));
-                }
-                break;
-
-                case "passengersNumber": {
-                    plane.getChars().setPassengersNumber(Integer.valueOf(reader.getText()));
-                }
-                break;
-
-                case "lenght": {
-                    plane.getParameters().setLenght(Double.valueOf(reader.getText()));
-                }
-                break;
-
-                case "height": {
-                    plane.getParameters().setHeight(Double.valueOf(reader.getText()));
-                }
-                break;
-
-                case "width": {
-                    plane.getParameters().setWidth(Double.valueOf(reader.getText()));
-                }
-                break;
-
-                case "cost": {
-                    plane.getCost().setPrice(Double.valueOf(reader.getText()));
-                }
-                break;
-
-            }
-
+            ParserUtil.switchElement(plane, name, reader.getText());
         }
     }
 

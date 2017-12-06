@@ -23,132 +23,113 @@ public class DOMParser {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(file);
-
-        Element airportElement = (Element) document.getElementsByTagName("airport").item(0);
+        List<Plane> planeList = new ArrayList<>();
 
         NodeList planeNodeList = document.getElementsByTagName("plane");
 
-        List<Plane> planeList = new ArrayList<>();
-
         for (int planeIndex = 0; planeIndex < planeNodeList.getLength(); planeIndex++) {
 
-            if (planeNodeList.item(planeIndex).getNodeType() == Node.ELEMENT_NODE) {
+            if (isElementNode(planeNodeList, planeIndex)) {
 
                 Element planeElement = (Element) planeNodeList.item(planeIndex);
 
                 Plane plane = new Plane();
+
                 plane.setNumber(Integer.valueOf(planeElement.getAttribute("number")));
 
-                NodeList planeDescriptionNodeList = planeElement.getChildNodes();
-
-                for (int planeDescriptionIndex = 0; planeDescriptionIndex < planeDescriptionNodeList.getLength(); planeDescriptionIndex++) {
-
-                    if (planeDescriptionNodeList.item(planeDescriptionIndex).getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element planeDescriptionElement = (Element) planeDescriptionNodeList.item(planeDescriptionIndex);
-
-                        switch (planeDescriptionElement.getNodeName()) {
-
-                            case "model": {
-                                plane.setModel(planeDescriptionElement.getTextContent());
-                            }
-                            break;
-
-                            case "origin": {
-                                plane.setOrigin(planeDescriptionElement.getTextContent());
-                            }
-                            break;
-
-                            case "chars": {
-
-                                plane.getChars().setType(planeDescriptionElement.getAttribute("type"));
-
-                                NodeList charsNodeList = planeDescriptionElement.getChildNodes();
-
-                                for (int charsIndex = 0; charsIndex < charsNodeList.getLength(); charsIndex++) {
-
-                                    if (charsNodeList.item(charsIndex).getNodeType() == Node.ELEMENT_NODE) {
-
-                                        Element charsElement = (Element) charsNodeList.item(charsIndex);
-
-                                        switch (charsElement.getNodeName()) {
-
-                                            case "crewSeatsNumber": {
-                                                plane.getChars().setCrewSeatsNumber(Integer.valueOf(charsElement.getTextContent()));
-                                            }
-                                            break;
-
-                                            case "carryingCapacity": {
-                                                plane.getChars().setCarryingCapacity(Integer.valueOf(charsElement.getTextContent()));
-                                            }
-
-                                            case "passengersNumber": {
-                                                plane.getChars().setPassengersNumber(Integer.valueOf(charsElement.getTextContent()));
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-                            break;
-
-                            case "parameters": {
-
-                                NodeList parametersNodeList = planeDescriptionElement.getChildNodes();
-
-                                for (int parametersIndex = 0; parametersIndex < parametersNodeList.getLength(); parametersIndex++) {
-
-                                    if (parametersNodeList.item(parametersIndex).getNodeType() == Node.ELEMENT_NODE) {
-
-                                        Element parametersElement = (Element) parametersNodeList.item(parametersIndex);
-
-                                        switch (parametersElement.getNodeName()) {
-
-                                            case "lenght": {
-                                                plane.getParameters().setLenght(Double.valueOf(parametersElement.getTextContent()));
-                                            }
-
-                                            case "height": {
-                                                plane.getParameters().setHeight(Double.valueOf(parametersElement.getTextContent()));
-                                            }
-
-                                            case "width": {
-                                                plane.getParameters().setWidth(Double.valueOf(parametersElement.getTextContent()));
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-                            break;
-
-                            case "cost": {
-
-                                plane.getCost().setCurrency(planeDescriptionElement.getAttribute("currency"));
-
-                                plane.getCost().setPrice(Double.valueOf(planeDescriptionElement.getTextContent()));
-                            }
-                            break;
-
-                        }
-
-                    }
-
-                }
+                considerChildNode(plane, planeElement);
 
                 planeList.add(plane);
             }
-
         }
-
         Airport airport = new Airport(planeList);
         return airport;
+    }
 
+    private void considerChildNode(Plane plane, Element element) {
+
+        NodeList nodeList = element.getChildNodes();
+
+        for (int index = 0; index < nodeList.getLength(); index++) {
+
+            if (isElementNode(nodeList, index)) {
+
+                Element childElement = (Element) nodeList.item(index);
+                switchNodeName(plane, childElement);
+            }
+        }
+    }
+
+    private void switchNodeName(Plane plane, Element element) {
+        switch (element.getNodeName()) {
+            case "model": {
+                plane.setModel(element.getTextContent());
+            }
+            break;
+
+            case "origin": {
+                plane.setOrigin(element.getTextContent());
+            }
+            break;
+
+            case "chars": {
+                plane.getChars().setType(element.getAttribute("type"));
+                considerChildNode(plane, element);
+            }
+            break;
+
+            case "parameters": {
+                considerChildNode(plane, element);
+            }
+            break;
+
+            case "cost": {
+                plane.getCost().setCurrency(element.getAttribute("currency"));
+                plane.getCost().setPrice(Double.valueOf(element.getTextContent()));
+            }
+            break;
+
+            case "crewSeatsNumber": {
+                plane.getChars().setCrewSeatsNumber(getIntTextContent(element));
+            }
+            break;
+
+            case "carryingCapacity": {
+                plane.getChars().setCarryingCapacity(getIntTextContent(element));
+            }
+            break;
+
+            case "passengersNumber": {
+                plane.getChars().setPassengersNumber(getIntTextContent(element));
+            }
+            break;
+
+            case "lenght": {
+                plane.getParameters().setLenght(getDoubleTextContent(element));
+            }
+            break;
+
+            case "height": {
+                plane.getParameters().setHeight(getDoubleTextContent(element));
+            }
+            break;
+
+            case "width": {
+                plane.getParameters().setWidth(getDoubleTextContent(element));
+            }
+            break;
+        }
+    }
+
+    private Integer getIntTextContent(Element element) {
+        return Integer.valueOf(element.getTextContent());
+    }
+
+    private Double getDoubleTextContent(Element element) {
+        return Double.valueOf(element.getTextContent());
+    }
+
+    private boolean isElementNode(NodeList nodeList, int index) {
+        return nodeList.item(index).getNodeType() == Node.ELEMENT_NODE;
     }
 }
